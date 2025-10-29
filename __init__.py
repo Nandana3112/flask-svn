@@ -4,8 +4,8 @@ import os
 
 app = Flask(__name__)
 
-SVN_BIN = r"C:\Program Files\VisualSVN Server\bin\svn.exe"
-SVNADM_BIN = r"C:\Program Files\VisualSVN Server\bin\svnadmin.exe"
+SVN_BIN = r"C:\Program Files\Apache Subversion\bin\svn.exe"
+SVNADM_BIN = r"C:\Program Files\Apache Subversion\bin\svnadmin.exe"
 REPO_PATH = r"C:\svn-repos\myrepo"
 WORKING_COPY = r"C:\svn\myrepo_wc"
 
