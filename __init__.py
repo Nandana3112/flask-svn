@@ -10,7 +10,8 @@ app = Flask(__name__)
 SVN_BIN = r"C:\Program Files\Apache Subversion\bin\svn.exe"
 SVNADM_BIN = r"C:\Program Files\Apache Subversion\bin\svnadmin.exe"
 REPO_BASE = r"C:\svn-repos"
-REPO_PATH = r"C:\svn-repos\myrepo"
+REPO_NAME = "myrepo"
+REPO_PATH = os.path.join(REPO_BASE, REPO_NAME)
 WORKING_COPY = r"C:\svn\myrepo_wc"
 
 # ===Helper Functions===
@@ -30,22 +31,20 @@ def file_url(path):
 
 
 def ensure_repo_and_wc(repo_path=REPO_PATH, wc_path=WORKING_COPY):
-    os.makedirs(os.path.dirname(repo_path), exist_ok=True)
-    repo_existed = os.path.isdir(repo_path)
+    repo_dir = os.path.abspath(repo_path)
+    repo_base_dir = os.path.dirname(repo_dir)
+    if repo_base_dir:
+        os.makedirs(repo_base_dir, exist_ok=True)
+    repo_existed = os.path.exists(repo_dir)
     if not repo_existed:
-        rc, out, err = run_cmd([SVNADM_BIN, "create", repo_path])
+        rc, out, err = run_cmd([SVNADM_BIN, "create", repo_dir])
         if rc != 0:
             return False, f"svnadmin create failed: {err or out}"
-        with tempfile.TemporaryDirectory() as tmp:
-            os.makedirs(os.path.join(tmp, "trunk"), exist_ok=True)
-            rc, out, err = run_cmd([SVN_BIN, "import", file_url(
-                repo_path), "-m", "Initial import", file_url(tmp)])
-            if rc != 0:
-                return False, f"svn import failed: {err or out}"
-    if not os.path.exists(wc_path) or not os.path.isdir(os.path.join(wc_path, ".svn")):
-        os.makedirs(wc_path, exist_ok=True)
+    wc_svn_dir = os.path.join(wc_path, ".svn")
+    if not os.path.exists(wc_path) or not os.path.isdir(wc_svn_dir):
+        os.makedirs(os.path.dirname(wc_path), exist_ok=True)
         rc, out, err = run_cmd(
-            [SVN_BIN, "checkout", file_url(repo_path) + "/trunk", wc_path])
+            [SVN_BIN, "checkout", file_url(repo_dir), wc_path])
         if rc != 0:
             return False, f"svn checkout failed: {err or out}"
     return True, "SVN repository and working copy are ready."
@@ -83,6 +82,25 @@ def add_file_to_wc(filename, file_content):
     return dest, msg
 
 
+def list_working_copy_files():
+    file_list = []
+    for root, dirs, files in os.walk(WORKING_COPY):
+        dirs[:] = [d for d in dirs if d != '.svn']
+        for fname in files:
+            file_list.append(os.path.relpath(
+                os.path.join(root, fname), WORKING_COPY))
+    return sorted(file_list)
+
+
+def list_repo_files():
+    rc, out, err = run_cmd(
+        [SVN_BIN, "list", file_url(REPO_PATH), "--recursive"])
+    if rc == 0:
+        return [line.strip() for line in out.splitlines() if line.strip() and not line.strip().endswith('/')]
+    else:
+        return [f"Error listing repo files: {err or out}"]
+
+
 # ==Ensure Repository and Working Copy Exist===
 ensure_repo_and_wc(REPO_PATH, WORKING_COPY)
 
@@ -112,14 +130,9 @@ def home():
                 message += f"Commit failed: {msg}"
         elif not message:
             message = "No files were added."
-
-    def gather_files():
-        for root, dirs, files in os.walk(WORKING_COPY):
-            dirs[:] = [d for d in dirs if d != '.svn']
-            for fname in files:
-                yield os.path.relpath(os.path.join(root, fname), WORKING_COPY)
-    files = sorted(gather_files())
-    return render_template('home.html', files=files, message=message)
+    files = list_working_copy_files()
+    repo_files = list_repo_files()
+    return render_template('home.html', files=files, repo_files=repo_files, message=message)
 
 
 @app.route('/svn/info')

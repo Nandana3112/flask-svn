@@ -1,22 +1,30 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>SVN File Upload</title>
 </head>
+
 <body>
-<h2>Upload files to SVN Repository</h2>
-<form method = "POST" enctype="multipart/form-data">
-    <input type = "file" name="files" multiple />
-    <input type = "submit" value="Upload" />
-</form>
-{% if message %}
+    <h2>Upload files to SVN Repository</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="files" multiple />
+        <input type="submit" value="Upload" />
+    </form>
+    {% if message %}
     <p>{{ message }}</p>
-{% endif %}
-<h3>Files in Working Copy:</h3>
-<ul>
-{% for f in files %}
-    <li>{{ f }}</li>
-{% endfor %}
-</ul>
+    {% endif %}
+    <h3>Files in Working Copy:</h3>
+    <ul>
+        {% for f in files %}
+        <li>{{ f }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Files in the SVN Repository:</h3>
+    <ul>
+        {% for rf in repo_files %}
+        <li>{{ rf }}</li>
+        {% endfor %}
 </body>
+
 </html>
