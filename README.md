@@ -8,49 +8,94 @@ This README demonstrates the common workflow for the Flask SVN app:
 
 The server is assumed to run at `http://127.0.0.1:5000`.
 
-# Using the Flask SVN App GUI
+# Using the Flask SVN App- Web GUI Instructions
 
-You can manage your Subversion repository **without any command line or curl** simply use the web interface provided by the Flask app!
+This guide shows you and your users how to use the web interface of the Flask SVN app to upload files, commit changes, and view results **without using the command line**. The steps are simple and illustrated below so everyone can follow along.
 
----
 
-## 1. Uploading and Committing Files via the Web GUI
+## 1. Start the Flask SVN App
 
-**Steps:**
+**Open your terminal (e.g., Command Prompt, PowerShell) and type:**
 
-1. **Start the Flask app**Run:
+```
+python __init__.py
+```
 
-   ```
-   python __init__.py
-   ```
+*(or `flask run` depending on your setup)*
 
-   or
+When the app is running, you’ll see messages like this:
 
-   ```
-   flask run
-   ```
-
-   *(depending on your setup)*
-2. **Open your browser and go to:**[http://127.0.0.1:5000/](http://127.0.0.1:5000/)
-3. **On the homepage, use the "Upload files to SVN Repository" form:**
-
-   - Click **"Choose File"** and select one or more files from your computer.
-   - Click **"Upload"**.
-4. **Result:**
-
-   - The files are added to the Subversion working copy and committed to the repository with your message.
-   - You'll see a success message and the uploaded files listed under "Files in Working Copy".
+* Running on http://127.0.0.1:5000
 
 ---
 
-## Example Workflow in the GUI
 
-- Choose and upload files right from your browser.
-- Each upload will:
-  - Save the file(s) in the working copy.
-  - Add them to SVN versioning.
-  - Commit them to the repository.
-- No need for curl, command line, or manual SVN commands.
+
+## 2. Open the App in Your Browser
+
+**Go to:**
+`http://127.0.0.1:5000/`
+
+You’ll see a page like this:
+
+![1762176377373](image/README/1762176377373.png)
+
+---
+
+
+## 3. Upload and Commit Files
+
+**Step 1:**
+Click the **Choose File** button (highlighted below).
+Select one or more files that you want to add to the repository.
+
+![1762176557407](image/README/1762176557407.png)
+
+
+**Step 2:**
+Click the **Upload** button.
+
+---
+
+
+
+## 4. Success and Confirmation
+
+After uploading, you’ll see a success message:
+
+![1762176711805](image/README/1762176711805.png)
+
+The list just below the form shows all files currently in your working copy.
+New files will appear here immediately after upload.
+
+---
+
+
+
+## 5. What Happens When You Upload?
+
+- Your files are copied into the SVN working copy.
+- They’re automatically added for versioning (no command line or technical steps needed).
+- A commit is made with your message (or a default one).
+- You’ll see your changes reflected right away.
+
+---
+
+
+
+## 6. Notes for New Users
+
+- You **never need to use command line tools** if you prefer the GUI.
+- Each upload is versioned and committed just like in any SVN client!
+- Use the browser for all routine tasks: upload, view files, check status.
+
+---
+
+
+
+## 7. API / Command Line Reference
+
+*(For advanced users, automation, or scripts, use the API/curl section below.)*
 
 ---
 
@@ -100,8 +145,6 @@ curl -X POST http://127.0.0.1:5000/svn/add_file \
 ```
 
 ---
-
-
 
 ## 3. Committing the file to the repository
 
